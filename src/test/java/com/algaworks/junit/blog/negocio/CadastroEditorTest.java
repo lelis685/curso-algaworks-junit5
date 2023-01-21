@@ -4,9 +4,7 @@ import com.algaworks.junit.blog.armazenamento.ArmazenamentoEditor;
 import com.algaworks.junit.blog.modelo.Editor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoSettings;
 
 import java.math.BigDecimal;
@@ -18,6 +16,9 @@ import static org.mockito.Mockito.*;
 
 @MockitoSettings
 class CadastroEditorTest {
+
+    @Captor
+    ArgumentCaptor<Mensagem> mensagemArgumentCaptor;
 
     @Mock
     GerenciadorEnvioEmail gerenciadorEnvioEmail;
@@ -65,6 +66,16 @@ class CadastroEditorTest {
                 () ->   verify(gerenciadorEnvioEmail, never()).enviarEmail(any())
         );
     }
+
+
+    @Test
+    public void dado_editor_valido_quando_cadastrar_entao_retorna_deve_enviar_email_destinatario_correto() {
+        Editor editorSalvo = cadastroEditor.criar(editor);
+        verify(gerenciadorEnvioEmail).enviarEmail(mensagemArgumentCaptor.capture());
+        Mensagem mensagemPassada = mensagemArgumentCaptor.getValue();
+        assertEquals(editorSalvo.getEmail(), mensagemPassada.getDestinatario());
+    }
+
 
 
 
