@@ -37,7 +37,7 @@ class CadastroEditorTest {
     class CadastroComEditorValido {
 
         @Spy
-        Editor editor = new Editor(null, "marco", "marco@mail.com", BigDecimal.TEN, true);
+        Editor editor = EditorTestData.umEditorNovo().build();
 
         @BeforeEach
         void beforeEach() {
@@ -93,11 +93,11 @@ class CadastroEditorTest {
 
         @Test
         public void dado_editor_com_email_inexistente_quando_cadastrar_entao_deve_lancar_Exception() {
-            when(armazenamentoEditor.encontrarPorEmail("marco@mail.com"))
+            when(armazenamentoEditor.encontrarPorEmail("alex@email.com"))
                     .thenReturn(Optional.empty())
                     .thenReturn(Optional.of(editor));
 
-            Editor editorEmailExistente = new Editor(null, "marco", "marco@mail.com", BigDecimal.TEN, true);
+            Editor editorEmailExistente = EditorTestData.umEditorNovo().build();
             cadastroEditor.criar(editor);
             assertThrows(RegraNegocioException.class, () -> cadastroEditor.criar(editorEmailExistente));
         }
@@ -127,7 +127,7 @@ class CadastroEditorTest {
     @Nested
     class EdicaoComEditorValido{
         @Spy
-        Editor editor = new Editor(1L, "marco", "marco@mail.com", BigDecimal.TEN, true);
+        Editor editor = EditorTestData.umEditorExistente().build();
 
         @BeforeEach
         void init(){
@@ -137,7 +137,8 @@ class CadastroEditorTest {
 
         @Test
         void dado_um_editor_valido_quando_editar_entao_deve_alterar_editor_salvo(){
-            Editor editorAtual = new Editor(1L, "marco", "marco@mail.com", BigDecimal.TEN, false);
+            Editor editorAtual = EditorTestData.umEditorExistente()
+                    .comEmail("marco1@mail.com").build();
             cadastroEditor.editar(editorAtual);
             verify(editor, times(1)).atualizarComDados(editorAtual);
 
@@ -153,7 +154,7 @@ class CadastroEditorTest {
     @Nested
     class EdicaoComEditorInexistente {
 
-        Editor editor = new Editor(99L, "Alex", "alex@email.com", BigDecimal.TEN, true);
+        Editor editor = EditorTestData.umEditorComIdInexistente().build();
 
         @BeforeEach
         void init() {
